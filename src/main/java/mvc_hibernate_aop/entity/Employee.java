@@ -1,6 +1,10 @@
 package mvc_hibernate_aop.entity;
 
+
+
 import javax.persistence.*;
+
+
 
 @Entity
 @Table(name = "employees")
