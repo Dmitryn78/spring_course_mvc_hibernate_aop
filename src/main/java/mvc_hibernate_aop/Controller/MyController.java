@@ -1,15 +1,12 @@
 package mvc_hibernate_aop.Controller;
 
 
-import mvc_hibernate_aop.entity.Employee;
-import mvc_hibernate_aop.mvc_hibernate_dao.EmployeeDao;
-import mvc_hibernate_aop.service.EmployeeService;
+import mvc_hibernate_aop.entity.User;
+import mvc_hibernate_aop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,35 +14,42 @@ import java.util.List;
 public class MyController {
 
     @Autowired
-    private EmployeeService employeeService;
+    private UserService userService;
 
-    @RequestMapping("/")
-    public String showAllEmployees(Model model) {
-       List<Employee> allEmployees = employeeService.getAllEmployees();
-       model.addAttribute("allEmps",allEmployees);
-          return "all_employees";
-    }
-    @RequestMapping("addNewEmployee")
-    public String addNewEmployee(Model model){
-        Employee employee = new Employee();
-        model.addAttribute(employee);
-        return "employee_info";
+    @GetMapping("/")
+    public String getUsers(Model model) {
+        model.addAttribute("users", userService.getAllUsers());
+        return "/users";
     }
 
-    @RequestMapping("/saveEmployee")
-    public String saveEmployee(@ModelAttribute ("employee") Employee employee) {
-        employeeService.saveEmployee(employee);
+    @GetMapping("/new")
+    public String addUser(Model model) {
+       List<User> allUsers = userService.getAllUsers();
+       model.addAttribute("user", new User());
+          return "new";
+    }
+
+    @PostMapping
+    public String createUser(@ModelAttribute("user") User user){
+        userService.saveUser(user);
         return "redirect:/";
     }
-    @RequestMapping("/updateInfo")
-    public  String updateEmployee(@RequestParam ("empId") int id, Model model) {
-        Employee employee = employeeService.getEmployee(id);
-        model.addAttribute("employee", employee);
-    return "employee_info";
+
+    @GetMapping("/{id}/edit")
+    public String editUser(@PathVariable ("id") int id, Model model) {
+        model.addAttribute("user", userService.getUser(id));
+        return "edit";
     }
-    @RequestMapping("/deleteEmployee")
-    public String deleteEmployee(@RequestParam("empId") int id) {
-        employeeService.deleteEmployee(id);
+
+    @PatchMapping("/{id}")
+    public  String updateUser(@ModelAttribute("user") User user, @PathVariable("id") int id) {
+        userService.updateUser(id, user);
+    return "redirect:/";
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public String deleteUser(@PathVariable("id") int id) {
+        userService.deleteUser(id);
         return "redirect:/";
 
     }
